@@ -15,4 +15,4 @@ def producto(nombre):
     return f'Producto: {nombre} – disponible en tienda'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
