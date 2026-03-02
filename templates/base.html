@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Proyecto{% endblock %}</title>
+</head>
+<body>
+
+    <header>
+        <h1>Tienda Online</h1>
+        <nav>
+            <a href="/">Inicio</a>
+            <a href="/about">Acerca de</a>
+        </nav>
+    </header>
+
+    <hr>
+
+    {% block content %}
+    {% endblock %}
+
+    <hr>
+
+    <footer>
+        <p>© 2026 Mi Proyecto Flask</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+    <h2>Bienvenido a la Tienda Online</h2>
+
+    {% if nombre %}
+        <p>Hola, {{ nombre }} 👋</p>
+    {% else %}
+        <p>Explora nuestros productos y ofertas</p>
+    {% endif %}
+{% endblock %}
