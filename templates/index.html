@@ -1,34 +1,70 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tienda Online</title>
+</head>
 
-{% block title %}Inicio{% endblock %}
+<body>
 
-{% block content %}
+<h1>🛒 Tienda Online</h1>
 
-    <h2>Bienvenido a la Tienda Online</h2>
+<hr>
 
-    {% if nombre %}
-        <p>Hola, {{ nombre }} 👋</p>
-    {% else %}
-        <p>Explora nuestros productos y ofertas</p>
-    {% endif %}
+<h3>➕ Agregar Producto</h3>
 
-    <hr>
+<form action="/guardar" method="POST">
+    <input type="text" name="nombre" placeholder="Nombre" required><br><br>
+    <input type="number" name="precio" placeholder="Precio" required><br><br>
+    <input type="number" name="cantidad" placeholder="Cantidad" required><br><br>
 
-    <h2>Agregar Producto</h2>
+    <button type="submit">Guardar</button>
+</form>
 
-    <form action="/guardar" method="POST">
-        <input type="text" name="nombre" placeholder="Nombre"><br><br>
-        <input type="number" name="precio" placeholder="Precio"><br><br>
-        <input type="number" name="cantidad" placeholder="Cantidad"><br><br>
-        <button type="submit">Guardar</button>
-    </form>
+<hr>
 
-{% endblock %}
-<a href="/datos">Ver datos guardados</a>
-<br><br>
+<h3>🔍 Buscar Producto</h3>
 
-<a href="/datos">Ver productos guardados</a>
-<br>
-<a href="/inventario">Ver inventario</a>
-<br>
-<a href="/buscar">Buscar producto</a>
+<form action="/buscar" method="POST">
+    <input type="text" name="nombre" placeholder="Buscar" required>
+    <button type="submit">Buscar</button>
+</form>
+
+<hr>
+
+<h3>📦 Inventario</h3>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Acciones</th>
+    </tr>
+
+    {% for p in productos %}
+    <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.precio }}</td>
+        <td>{{ p.cantidad }}</td>
+        <td>
+            <a href="/eliminar/{{ p.id }}">❌</a>
+            <a href="/editar/{{ p.id }}">✏️</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<hr>
+
+<a href="/datos">📂 Ver datos guardados</a>
+
+<hr>
+
+<footer>
+    © 2026 Mi Proyecto Flask
+</footer>
+
+</body>
+</html>

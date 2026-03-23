@@ -1,4 +1,4 @@
-from inventario.productos import Producto
+from .productos import Producto
 
 class Inventario:
     def __init__(self):
@@ -11,12 +11,12 @@ class Inventario:
         if id in self.productos:
             del self.productos[id]
 
-    def actualizar(self, id, cantidad=None, precio=None):
+    def actualizar(self, id, precio=None, cantidad=None):
         if id in self.productos:
-            if cantidad is not None:
-                self.productos[id].set_cantidad(cantidad)
-            if precio is not None:
-                self.productos[id].set_precio(precio)
+            if precio:
+                self.productos[id].precio = precio
+            if cantidad:
+                self.productos[id].cantidad = cantidad
 
     def buscar(self, nombre):
         resultados = []

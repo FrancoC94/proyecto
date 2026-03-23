@@ -2,16 +2,11 @@ from flask import Flask, render_template, request, redirect
 import json
 import csv
 
-# IMPORTS DE BASE DE DATOS
 from inventario.bd import Producto, db
-
-# IMPORTS DE POO (TU TAREA)
-from inventario.inventario import Inventario
-from inventario.productos import Producto as ProductoClase
 
 app = Flask(__name__)
 
-# ---------------- CONFIGURACIÓN BASE DE DATOS ----------------
+# CONFIGURACIÓN
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///productos.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -20,15 +15,13 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# ---------------- INVENTARIO (POO + COLECCIONES) ----------------
-inventario = Inventario()
-
-# ---------------- RUTA PRINCIPAL ----------------
+# ---------------- INICIO ----------------
 @app.route('/')
 def inicio():
-    return render_template('index.html')
+    productos = Producto.query.all()
+    return render_template('index.html', productos=productos)
 
-# ---------------- GUARDAR DATOS ----------------
+# ---------------- GUARDAR ----------------
 @app.route('/guardar', methods=['POST'])
 def guardar():
 
@@ -36,20 +29,12 @@ def guardar():
     precio = request.form['precio']
     cantidad = request.form['cantidad']
 
-    # ---------------- POO (AGREGAR AL INVENTARIO) ----------------
-    nuevo_producto = ProductoClase(nombre, precio, cantidad)
-    inventario.agregar(nuevo_producto)
-
-    # ---------------- TXT ----------------
+    # TXT
     with open('inventario/data/datos.txt', 'a') as f:
         f.write(nombre + "," + precio + "," + cantidad + "\n")
 
-    # ---------------- JSON ----------------
-    data = {
-        "nombre": nombre,
-        "precio": precio,
-        "cantidad": cantidad
-    }
+    # JSON
+    data = {"nombre": nombre, "precio": precio, "cantidad": cantidad}
 
     try:
         with open('inventario/data/datos.json', 'r') as f:
@@ -62,19 +47,50 @@ def guardar():
     with open('inventario/data/datos.json', 'w') as f:
         json.dump(datos, f, indent=4)
 
-    # ---------------- CSV ----------------
+    # CSV
     with open('inventario/data/datos.csv', 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow([nombre, precio, cantidad])
 
-    # ---------------- BASE DE DATOS ----------------
+    # BD
     nuevo = Producto(nombre=nombre, precio=precio, cantidad=cantidad)
     db.session.add(nuevo)
     db.session.commit()
 
     return redirect('/')
 
-# ---------------- VER DATOS ----------------
+# ---------------- ELIMINAR ----------------
+@app.route('/eliminar/<int:id>')
+def eliminar(id):
+    producto = Producto.query.get(id)
+    db.session.delete(producto)
+    db.session.commit()
+    return redirect('/')
+
+# ---------------- EDITAR ----------------
+@app.route('/editar/<int:id>', methods=['GET', 'POST'])
+def editar(id):
+    producto = Producto.query.get(id)
+
+    if request.method == 'POST':
+        producto.nombre = request.form['nombre']
+        producto.precio = request.form['precio']
+        producto.cantidad = request.form['cantidad']
+
+        db.session.commit()
+        return redirect('/')
+
+    return render_template('editar.html', producto=producto)
+
+# ---------------- BUSCAR ----------------
+@app.route('/buscar', methods=['POST'])
+def buscar():
+    nombre = request.form['nombre']
+    productos = Producto.query.filter(Producto.nombre.contains(nombre)).all()
+
+    return render_template('index.html', productos=productos)
+
+# ---------------- DATOS ----------------
 @app.route('/datos')
 def datos():
 
@@ -98,36 +114,6 @@ def datos():
         productos=productos
     )
 
-# ---------------- VER INVENTARIO (POO) ----------------
-@app.route('/inventario')
-def ver_inventario():
-    return str([
-        {
-            "nombre": p.nombre,
-            "precio": p.precio,
-            "cantidad": p.cantidad
-        }
-        for p in inventario.listar().values()
-    ])
-
-# ---------------- BUSCAR PRODUCTO (POO) ----------------
-@app.route('/buscar', methods=['GET', 'POST'])
-def buscar():
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        resultados = inventario.buscar(nombre)
-
-        return str([
-            {
-                "nombre": p.nombre,
-                "precio": p.precio,
-                "cantidad": p.cantidad
-            }
-            for p in resultados
-        ])
-
-    return render_template('buscar.html')
-
-# ---------------- EJECUTAR ----------------
+# ---------------- RUN ----------------
 if __name__ == '__main__':
     app.run(debug=True)
