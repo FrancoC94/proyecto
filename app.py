@@ -1,17 +1,21 @@
 from flask import Flask, render_template, request, redirect
 import json
 import csv
+import os
 
 from inventario.bd import Producto, db
 
 app = Flask(__name__)
 
-# CONFIGURACIÓN
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///productos.db'
+# 🔥 BASE DE DATOS (FUNCIONA EN RENDER)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'sqlite:///productos.db'
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
+# 🔥 CREAR BASE DE DATOS
 with app.app_context():
     db.create_all()
 
