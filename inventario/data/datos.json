@@ -33,5 +33,10 @@
         "nombre": "disco duro ",
         "precio": "60",
         "cantidad": "2"
+    },
+    {
+        "nombre": "USB",
+        "precio": "4",
+        "cantidad": "15"
     }
 ]
