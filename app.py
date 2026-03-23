@@ -1,28 +1,23 @@
 from flask import Flask, render_template, request, redirect
 import json
 import csv
-import os
 
-from inventario.bd import Producto, db
+from conexion.conexion import conectar
 
 app = Flask(__name__)
-
-# 🔥 BASE DE DATOS (FUNCIONA EN RENDER)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 'sqlite:///productos.db'
-)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db.init_app(app)
-
-# 🔥 CREAR BASE DE DATOS
-with app.app_context():
-    db.create_all()
 
 # ---------------- INICIO ----------------
 @app.route('/')
 def inicio():
-    productos = Producto.query.all()
+    conn = conectar()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM productos")
+    productos = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
     return render_template('index.html', productos=productos)
 
 # ---------------- GUARDAR ----------------
@@ -56,33 +51,62 @@ def guardar():
         writer = csv.writer(f)
         writer.writerow([nombre, precio, cantidad])
 
-    # BD
-    nuevo = Producto(nombre=nombre, precio=precio, cantidad=cantidad)
-    db.session.add(nuevo)
-    db.session.commit()
+    # MYSQL
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO productos (nombre, precio, cantidad) VALUES (%s, %s, %s)",
+        (nombre, precio, cantidad)
+    )
+
+    conn.commit()
+    cursor.close()
+    conn.close()
 
     return redirect('/')
 
 # ---------------- ELIMINAR ----------------
 @app.route('/eliminar/<int:id>')
 def eliminar(id):
-    producto = Producto.query.get(id)
-    db.session.delete(producto)
-    db.session.commit()
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM productos WHERE id=%s", (id,))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
     return redirect('/')
 
 # ---------------- EDITAR ----------------
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 def editar(id):
-    producto = Producto.query.get(id)
+    conn = conectar()
+    cursor = conn.cursor(dictionary=True)
 
     if request.method == 'POST':
-        producto.nombre = request.form['nombre']
-        producto.precio = request.form['precio']
-        producto.cantidad = request.form['cantidad']
+        nombre = request.form['nombre']
+        precio = request.form['precio']
+        cantidad = request.form['cantidad']
 
-        db.session.commit()
+        cursor.execute(
+            "UPDATE productos SET nombre=%s, precio=%s, cantidad=%s WHERE id=%s",
+            (nombre, precio, cantidad, id)
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
         return redirect('/')
+
+    cursor.execute("SELECT * FROM productos WHERE id=%s", (id,))
+    producto = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
 
     return render_template('editar.html', producto=producto)
 
@@ -90,7 +114,19 @@ def editar(id):
 @app.route('/buscar', methods=['POST'])
 def buscar():
     nombre = request.form['nombre']
-    productos = Producto.query.filter(Producto.nombre.contains(nombre)).all()
+
+    conn = conectar()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        "SELECT * FROM productos WHERE nombre LIKE %s",
+        ('%' + nombre + '%',)
+    )
+
+    productos = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template('index.html', productos=productos)
 
@@ -108,7 +144,14 @@ def datos():
         reader = csv.reader(f)
         datos_csv = list(reader)
 
-    productos = Producto.query.all()
+    conn = conectar()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM productos")
+    productos = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template(
         'datos.html',

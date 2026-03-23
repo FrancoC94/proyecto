@@ -28,5 +28,10 @@
         "nombre": "laptop",
         "precio": "250",
         "cantidad": "5"
+    },
+    {
+        "nombre": "disco duro ",
+        "precio": "60",
+        "cantidad": "2"
     }
 ]
