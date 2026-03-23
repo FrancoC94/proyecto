@@ -3,6 +3,7 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
+
     <h2>Bienvenido a la Tienda Online</h2>
 
     {% if nombre %}
@@ -10,4 +11,17 @@
     {% else %}
         <p>Explora nuestros productos y ofertas</p>
     {% endif %}
+
+    <hr>
+
+    <h2>Agregar Producto</h2>
+
+    <form action="/guardar" method="POST">
+        <input type="text" name="nombre" placeholder="Nombre"><br><br>
+        <input type="number" name="precio" placeholder="Precio"><br><br>
+        <input type="number" name="cantidad" placeholder="Cantidad"><br><br>
+        <button type="submit">Guardar</button>
+    </form>
+
 {% endblock %}
+<a href="/datos">Ver datos guardados</a>

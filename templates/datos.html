@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Datos Guardados</title>
+</head>
+<body>
+
+<h2>Datos guardados</h2>
+
+<h3>TXT</h3>
+<ul>
+    {% for d in txt %}
+        <li>{{ d }}</li>
+    {% endfor %}
+</ul>
+
+<h3>JSON</h3>
+<ul>
+    {% for d in json %}
+        <li>{{ d.nombre }} - {{ d.precio }} - {{ d.cantidad }}</li>
+    {% endfor %}
+</ul>
+
+<h3>CSV</h3>
+<ul>
+    {% for d in csv %}
+        <li>{{ d }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Base de Datos (SQLite)</h3>
+<ul>
+    {% for p in productos %}
+        <li>{{ p.nombre }} - {{ p.precio }} - {{ p.cantidad }}</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
