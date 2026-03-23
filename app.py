@@ -2,11 +2,16 @@ from flask import Flask, render_template, request, redirect
 import json
 import csv
 
+# IMPORTS DE BASE DE DATOS
 from inventario.bd import Producto, db
+
+# IMPORTS DE POO (TU TAREA)
+from inventario.inventario import Inventario
+from inventario.productos import Producto as ProductoClase
 
 app = Flask(__name__)
 
-# CONFIGURACIÓN BASE DE DATOS
+# ---------------- CONFIGURACIÓN BASE DE DATOS ----------------
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///productos.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -14,6 +19,9 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
+# ---------------- INVENTARIO (POO + COLECCIONES) ----------------
+inventario = Inventario()
 
 # ---------------- RUTA PRINCIPAL ----------------
 @app.route('/')
@@ -28,11 +36,15 @@ def guardar():
     precio = request.form['precio']
     cantidad = request.form['cantidad']
 
-    # TXT
+    # ---------------- POO (AGREGAR AL INVENTARIO) ----------------
+    nuevo_producto = ProductoClase(nombre, precio, cantidad)
+    inventario.agregar(nuevo_producto)
+
+    # ---------------- TXT ----------------
     with open('inventario/data/datos.txt', 'a') as f:
         f.write(nombre + "," + precio + "," + cantidad + "\n")
 
-    # JSON
+    # ---------------- JSON ----------------
     data = {
         "nombre": nombre,
         "precio": precio,
@@ -50,12 +62,12 @@ def guardar():
     with open('inventario/data/datos.json', 'w') as f:
         json.dump(datos, f, indent=4)
 
-    # CSV
+    # ---------------- CSV ----------------
     with open('inventario/data/datos.csv', 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow([nombre, precio, cantidad])
 
-    # BASE DE DATOS
+    # ---------------- BASE DE DATOS ----------------
     nuevo = Producto(nombre=nombre, precio=precio, cantidad=cantidad)
     db.session.add(nuevo)
     db.session.commit()
@@ -85,6 +97,36 @@ def datos():
         csv=datos_csv,
         productos=productos
     )
+
+# ---------------- VER INVENTARIO (POO) ----------------
+@app.route('/inventario')
+def ver_inventario():
+    return str([
+        {
+            "nombre": p.nombre,
+            "precio": p.precio,
+            "cantidad": p.cantidad
+        }
+        for p in inventario.listar().values()
+    ])
+
+# ---------------- BUSCAR PRODUCTO (POO) ----------------
+@app.route('/buscar', methods=['GET', 'POST'])
+def buscar():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        resultados = inventario.buscar(nombre)
+
+        return str([
+            {
+                "nombre": p.nombre,
+                "precio": p.precio,
+                "cantidad": p.cantidad
+            }
+            for p in resultados
+        ])
+
+    return render_template('buscar.html')
 
 # ---------------- EJECUTAR ----------------
 if __name__ == '__main__':
