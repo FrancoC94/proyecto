@@ -8,5 +8,10 @@
         "nombre": "ruliman",
         "precio": "4",
         "cantidad": "10"
+    },
+    {
+        "nombre": "ruliman",
+        "precio": "5",
+        "cantidad": "20"
     }
 ]
