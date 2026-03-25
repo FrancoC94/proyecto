@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clientes</title>
+</head>
+<body>
+
+<h2>Gestión de Clientes</h2>
+
+<!-- FORMULARIO PARA AGREGAR -->
+<form method="POST" action="/guardar_cliente">
+    <input type="text" name="nombre" placeholder="Nombre" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="telefono" placeholder="Teléfono" required>
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+
+<!-- TABLA -->
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Acción</th>
+    </tr>
+
+    {% for c in clientes %}
+    <tr>
+        <td>{{ c.id_cliente }}</td>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.telefono }}</td>
+        <td>
+            <a href="/eliminar_cliente/{{ c.id_cliente }}">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+
+<a href="/">Volver a la tienda</a>
+
+</body>
+</html>

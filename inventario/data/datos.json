@@ -38,5 +38,15 @@
         "nombre": "USB",
         "precio": "4",
         "cantidad": "15"
+    },
+    {
+        "nombre": "Tarjeta grafica ",
+        "precio": "120",
+        "cantidad": "10"
+    },
+    {
+        "nombre": "CPU",
+        "precio": "150",
+        "cantidad": "5"
     }
 ]

@@ -6,3 +6,5 @@ ruliman,6,80
 laptop,250,5
 disco duro ,60,2
 USB,4,15
+Tarjeta grafica ,120,10
+CPU,150,5

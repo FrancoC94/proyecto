@@ -60,6 +60,88 @@
 
 <hr>
 
+<!-- 🔥 AGREGADO: MENÚ -->
+<h3>📌 Menú</h3>
+<a href="/clientes">👥 Clientes</a> |
+<a href="/reservas">📅 Reservas</a> |
+<a href="/logout">🚪 Cerrar sesión</a>
+
+<hr>
+
+<!-- 🔥 AGREGADO: CLIENTES -->
+<h3>👥 Clientes</h3>
+
+<form action="/guardar_cliente" method="POST">
+    <input type="text" name="nombre" placeholder="Nombre" required><br><br>
+    <input type="email" name="email" placeholder="Email" required><br><br>
+    <input type="text" name="telefono" placeholder="Teléfono" required><br><br>
+
+    <button type="submit">Guardar Cliente</button>
+</form>
+
+<br>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Acciones</th>
+    </tr>
+
+    {% for c in clientes %}
+    <tr>
+        <td>{{ c.id_cliente }}</td>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.telefono }}</td>
+        <td>
+            <a href="/eliminar_cliente/{{ c.id_cliente }}">❌</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<hr>
+
+<!-- 🔥 AGREGADO: RESERVAS -->
+<h3>📅 Reservas</h3>
+
+<form action="/guardar_reserva" method="POST">
+    <input type="number" name="cliente_id" placeholder="ID Cliente" required><br><br>
+    <input type="date" name="fecha" required><br><br>
+    <input type="text" name="descripcion" placeholder="Descripción" required><br><br>
+
+    <button type="submit">Guardar Reserva</button>
+</form>
+
+<br>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+    </tr>
+
+    {% for r in reservas %}
+    <tr>
+        <td>{{ r.id_reserva }}</td>
+        <td>{{ r.nombre }}</td>
+        <td>{{ r.fecha }}</td>
+        <td>{{ r.descripcion }}</td>
+        <td>
+            <a href="/eliminar_reserva/{{ r.id_reserva }}">❌</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<hr>
+
 <footer>
     © 2026 Mi Proyecto Flask
 </footer>
