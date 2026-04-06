@@ -4,10 +4,10 @@ def obtener_productos():
     conn = conectar()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM productos")
-    datos = cursor.fetchall()
+    productos = cursor.fetchall()
+    cursor.close()
     conn.close()
-    return datos
-
+    return productos
 
 def insertar_producto(nombre, precio, cantidad):
     conn = conectar()
@@ -17,12 +17,13 @@ def insertar_producto(nombre, precio, cantidad):
         (nombre, precio, cantidad)
     )
     conn.commit()
+    cursor.close()
     conn.close()
-
 
 def eliminar_producto(id):
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM productos WHERE id=%s", (id,))
     conn.commit()
+    cursor.close()
     conn.close()
